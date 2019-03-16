@@ -10,11 +10,13 @@ public class ServerThread extends Thread {
 	private int listeningPort;
 	static Vector<ClientThreadOut> clientVectorOut;
 	static Vector<ClientThreadIn> clientVectorIn;
+	boolean exited;
 
 	public ServerThread(int listenPort) {
 		this.listeningPort = listenPort;
 		ServerThread.clientVectorOut = new Vector<>();
 		ServerThread.clientVectorIn = new Vector<>();
+		this.exited = false;
 	}
 
 	@Override
@@ -140,8 +142,13 @@ public class ServerThread extends Thread {
 			for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
 				if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
 
-					if (!clientVectorIn.get(i).clientSocket.isClosed()) {
+					if (clientVectorIn.get(i).st.exited) {
+						System.out.println(i + 1 + "has left the chat.");
+					}
+
+					else if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).terminated) {
 						System.out.println("YOU HAVE BEEN TERMINATED :D?");
+						clientVectorIn.get(i).terminated = true;
 					}
 
 					if (!clientVectorIn.isEmpty()) {

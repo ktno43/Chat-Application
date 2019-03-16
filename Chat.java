@@ -60,6 +60,7 @@ public class Chat {
 
 			case "exit":
 				flag = false;
+				st.exited = true;
 
 				break;
 
