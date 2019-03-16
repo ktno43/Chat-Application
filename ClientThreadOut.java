@@ -10,7 +10,6 @@ public class ClientThreadOut extends Thread {
 	boolean sendMessage;
 	String clientMessage;
 	String ip;
-	boolean firstMsg;
 	final PrintStream out;
 
 	ClientThreadOut(String ip, int listenPort) throws IOException {
@@ -18,7 +17,7 @@ public class ClientThreadOut extends Thread {
 		this.listeningPort = listenPort;
 		this.ip = ip;
 		sendMessage = false;
-		firstMsg = true;
+
 		clientMessage = "";
 		out = new PrintStream(clientSocket.getOutputStream());
 	}
@@ -28,7 +27,7 @@ public class ClientThreadOut extends Thread {
 		ip = sock.getInetAddress().getHostAddress();
 		sendMessage = false;
 		clientMessage = "";
-		firstMsg = true;
+
 		out = new PrintStream(clientSocket.getOutputStream());
 	}
 

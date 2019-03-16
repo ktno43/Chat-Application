@@ -56,8 +56,10 @@ public class ServerThread extends Thread {
 							break;
 						}
 					}
+
 					if (breakout)
 						break;
+
 					Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
 					ClientThreadOut cto = new ClientThreadOut(s);
 					clientVectorOut.add(cto);
@@ -137,19 +139,18 @@ public class ServerThread extends Thread {
 
 	}
 
-	public boolean isConnected() throws IOException {
+	public synchronized boolean isConnected() throws IOException {
 		if (!clientVectorIn.isEmpty() && !clientVectorOut.isEmpty()) {
 			for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
+
 				if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
 
-					if (clientVectorIn.get(i).st.exited) {
-						System.out.println(i + 1 + "has left the chat.");
+					if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).terminated) {
+						System.out.println("YOU HAVE BEEN TERMINATED :D?");
 					}
 
-					else if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).terminated) {
-						System.out.println("YOU HAVE BEEN TERMINATED :D?");
-						clientVectorIn.get(i).terminated = true;
-					}
+					else
+						System.out.println("Someone has left the chat. . .");
 
 					if (!clientVectorIn.isEmpty()) {
 						ServerThread.clientVectorIn.remove(i);

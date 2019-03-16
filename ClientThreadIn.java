@@ -14,7 +14,6 @@ public class ClientThreadIn extends Thread {
 	boolean firstMsg;
 	boolean removedFromVector;
 	boolean terminated;
-	boolean exited;
 
 	ClientThreadIn(Socket sock, ServerThread serverThread) throws IOException {
 		this.clientSocket = sock;
@@ -23,7 +22,6 @@ public class ClientThreadIn extends Thread {
 		this.firstMsg = false;
 		this.removedFromVector = false;
 		this.terminated = false;
-		this.exited = false;
 	}
 
 	@Override
@@ -45,11 +43,11 @@ public class ClientThreadIn extends Thread {
 				String remoteMessage = input.readLine();
 
 				if (remoteMessage == null && !this.st.isConnected()) {
-					this.terminated = true;
+					terminated = true;
 					break;
 				}
 
-				if (!firstMsg) {
+				if (remoteMessage != null && !firstMsg) {
 					StringBuilder sb = new StringBuilder(remoteMessage);
 					if (remoteMessage != null && remoteMessage.charAt(0) != '{')
 						remoteMessage = sb.insert(0, '{').toString();
