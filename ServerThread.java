@@ -153,7 +153,7 @@ public class ServerThread extends Thread {
 				if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
 
 					if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).exited) {
-						System.out.println("YOU HAVE BEEN TERMINATED :D?");
+						System.out.println("\nYOU HAVE BEEN TERMINATED :D?\n");
 					}
 
 					if (!clientVectorIn.isEmpty()) {
