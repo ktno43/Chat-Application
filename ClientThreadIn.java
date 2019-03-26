@@ -63,7 +63,7 @@ public class ClientThreadIn extends Thread {
 				}
 
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.print("");
 			}
 		}
 

@@ -105,9 +105,14 @@ public class ServerThread extends Thread {
 	}
 
 	protected void sendUserMessage(int id, String m) {
-		ClientThreadOut cto = clientVectorOut.get(id - 1);
+		if (id < clientVectorOut.size() || id == 0 || id > clientVectorOut.size())
+			System.out.println("\nID is incorrect");
 
-		cto.send(m);
+		else {
+			ClientThreadOut cto = clientVectorOut.get(id - 1);
+
+			cto.send(m);
+		}
 	}
 
 	protected void sendAllExitMsg() {
@@ -120,20 +125,26 @@ public class ServerThread extends Thread {
 	protected void terminate(int id) throws IOException {
 
 		// swapPos(id);
-		ClientThreadOut deletedClient = clientVectorOut.remove(id - 1);
 
-		if (!deletedClient.clientSocket.isClosed()) {
-			deletedClient.clientSocket.close();
-		}
-		int deletedServerPort = deletedClient.getListenPort();
+		if (id < clientVectorOut.size() || id == 0 || id > clientVectorOut.size())
+			System.out.println("\nID is incorrect");
 
-		for (int i = 0; i < clientVectorIn.size(); i++) {
-			if (clientVectorIn.get(i).serverPort == deletedServerPort) {
-				if (!clientVectorIn.get(i).clientSocket.isClosed()) {
-					clientVectorIn.get(i).clientSocket.close();
+		else {
+			ClientThreadOut deletedClient = clientVectorOut.remove(id - 1);
+
+			if (!deletedClient.clientSocket.isClosed()) {
+				deletedClient.clientSocket.close();
+			}
+			int deletedServerPort = deletedClient.getListenPort();
+
+			for (int i = 0; i < clientVectorIn.size(); i++) {
+				if (clientVectorIn.get(i).serverPort == deletedServerPort) {
+					if (!clientVectorIn.get(i).clientSocket.isClosed()) {
+						clientVectorIn.get(i).clientSocket.close();
+					}
+					clientVectorIn.remove(i);
+					break;
 				}
-				clientVectorIn.remove(i);
-				break;
 			}
 		}
 
