@@ -66,8 +66,10 @@ public class ClientThreadIn extends Thread {
 				e.printStackTrace();
 			}
 		}
+
 		try {
 			this.clientSocket.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

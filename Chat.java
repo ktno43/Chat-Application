@@ -10,7 +10,7 @@ public class Chat {
 
 	public static synchronized void main(String[] args) throws IOException {
 		int portListen = Integer.parseInt(args[0]);
-		
+
 		st = new ServerThread(portListen);
 		st.start();
 
@@ -48,10 +48,12 @@ public class Chat {
 
 			case "terminate":
 				st.terminate(Integer.parseInt(inputList.get(1)));
+				System.out.println();
 				break;
-				
+
 			case "send":
 				send(Integer.parseInt(inputList.get(1)), inputList.get(2));
+				System.out.println();
 				break;
 
 			case "exit":
@@ -92,6 +94,7 @@ public class Chat {
 		} catch (Exception e) {
 			systemipaddress = "Cannot Execute Properly";
 		}
+
 		System.out.println("\nPublic IP Address: " + systemipaddress + "\n");
 	}
 
