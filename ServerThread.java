@@ -16,7 +16,7 @@ public class ServerThread extends Thread {
 	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
 		try (ServerSocket ss = new ServerSocket(this.listeningPort)) {
 			// start the server...
 
@@ -50,20 +50,22 @@ public class ServerThread extends Thread {
 					}
 				}
 
-				if (breakout)
-					break;
+				if (!breakout) {
 
-				Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
+					Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
 
-				ClientThreadOut cto = new ClientThreadOut(s);
-				clientVectorOut.add(cto);
-				cto.send(Integer.toString(listeningPort));
-				cto.start();
+					ClientThreadOut cto = new ClientThreadOut(s);
+					clientVectorOut.add(cto);
+					cto.send(Integer.toString(listeningPort));
+					cto.start();
 
-				if (!connectedClient.isAlive())
-					connectedClient.start();
+					if (!connectedClient.isAlive())
+						connectedClient.start();
 
-				isConnected();
+					isConnected();
+				}
+				
+				break;
 			}
 
 		} catch (IOException ioe) {

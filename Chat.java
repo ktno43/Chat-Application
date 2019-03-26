@@ -47,13 +47,26 @@ public class Chat {
 				break;
 
 			case "terminate":
-				st.terminate(Integer.parseInt(inputList.get(1)));
-				System.out.println();
+				if (inputList.size() > 1 && isNumeric(inputList.get(1))) {
+					st.terminate(Integer.parseInt(inputList.get(1)));
+
+					System.out.println();
+				}
+
+				else
+					System.out.println("\nID is incorrect\n");
+
 				break;
 
 			case "send":
-				send(Integer.parseInt(inputList.get(1)), inputList.get(2));
-				System.out.println();
+				if (inputList.size() > 2 && isNumeric(inputList.get(1))) {
+					send(Integer.parseInt(inputList.get(1)), inputList.get(2));
+					System.out.println();
+				}
+
+				else
+					System.out.println("\nID is incorrect\n");
+
 				break;
 
 			case "exit":
@@ -68,6 +81,15 @@ public class Chat {
 			}
 		}
 		System.exit(0);
+	}
+
+	private static boolean isNumeric(String str) {
+		try {
+			Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	private static void help() {
