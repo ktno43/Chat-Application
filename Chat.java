@@ -69,7 +69,6 @@ public class Chat {
 				break;
 			}
 		}
-		System.out.print(st.isAlive());
 		System.exit(0);
 	}
 

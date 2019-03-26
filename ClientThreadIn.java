@@ -45,20 +45,21 @@ public class ClientThreadIn extends Thread {
 				if (remoteMessage == null && !this.st.isConnected()) {
 					break;
 				}
-
-				if (remoteMessage != null && remoteMessage.equals("{EXIT}")) {
-					System.out.println("Someone has left the chat. . .");
-					exited = true;
-				}
-
+				
 				if (remoteMessage != null && !firstMsg) {
 					StringBuilder sb = new StringBuilder(remoteMessage);
 					if (remoteMessage != null && remoteMessage.charAt(0) != '{')
 						remoteMessage = sb.insert(0, '{').toString();
 					firstMsg = true;
 				}
+				
+				if (remoteMessage != null && remoteMessage.equals("{EXIT}")) {
+					System.out.println("\nSomeone has left the chat. . .\n");
+					exited = true;
+				}
 
-				if (remoteMessage != null && !remoteMessage.isEmpty() && isMessage(remoteMessage)) {
+
+				else if (remoteMessage != null && !remoteMessage.isEmpty() && isMessage(remoteMessage)) {
 
 					System.out.println("\nMessage received from " + this.clientSocket.getInetAddress().toString());
 					System.out.println("Sender's Port: " + serverPort);

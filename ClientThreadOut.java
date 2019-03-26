@@ -51,15 +51,8 @@ public class ClientThreadOut extends Thread {
 	public void send(String m) {
 		sendMessage = true;
 		clientMessage = m;
-		if (!m.equals("{EXIT}")) {
-			out.println(clientMessage);
-			out.flush();
-		}
-
-		else {
-			System.out.println("{EXIT}");
-			out.flush();
-		}
+		out.println(clientMessage);
+		out.flush();
 	}
 
 	public int getPort() {
