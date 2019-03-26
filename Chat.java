@@ -13,7 +13,7 @@ public class Chat {
 		st.start();
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static synchronized void main(String[] args) throws IOException {
 		int portListen = Integer.parseInt(args[0]);
 
 		Chat chat = new Chat(portListen);
@@ -60,7 +60,7 @@ public class Chat {
 
 			case "exit":
 				flag = false;
-				st.exited = true;
+				st.sendAllExitMsg();
 
 				break;
 
@@ -69,6 +69,7 @@ public class Chat {
 				break;
 			}
 		}
+		System.out.print(st.isAlive());
 		System.exit(0);
 	}
 
@@ -104,6 +105,7 @@ public class Chat {
 			st.addConn(clientIP, clientListenPort);
 		}
 	}
+
 
 	private static void send(int id, String m) {
 		StringBuilder sb = new StringBuilder(m);

@@ -117,6 +117,13 @@ public class ServerThread extends Thread {
 		cto.send(m);
 	}
 
+	public void sendAllExitMsg() {
+		for (int i = 0; i < clientVectorOut.size(); i++) {
+			ClientThreadOut cto = clientVectorOut.get(i);
+			cto.send("{EXIT}");
+		}
+	}
+
 	public void terminate(int id) throws IOException {
 
 		// swapPos(id);
@@ -145,12 +152,9 @@ public class ServerThread extends Thread {
 
 				if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
 
-					if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).terminated) {
+					if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).exited) {
 						System.out.println("YOU HAVE BEEN TERMINATED :D?");
 					}
-
-					else
-						System.out.println("Someone has left the chat. . .");
 
 					if (!clientVectorIn.isEmpty()) {
 						ServerThread.clientVectorIn.remove(i);

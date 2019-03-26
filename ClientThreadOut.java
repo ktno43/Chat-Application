@@ -11,12 +11,14 @@ public class ClientThreadOut extends Thread {
 	String clientMessage;
 	String ip;
 	final PrintStream out;
+	boolean exited;
 
 	ClientThreadOut(String ip, int listenPort) throws IOException {
 		clientSocket = new Socket(ip, listenPort);
 		this.listeningPort = listenPort;
 		this.ip = ip;
 		sendMessage = false;
+		exited = false;
 
 		clientMessage = "";
 		out = new PrintStream(clientSocket.getOutputStream());
@@ -49,8 +51,15 @@ public class ClientThreadOut extends Thread {
 	public void send(String m) {
 		sendMessage = true;
 		clientMessage = m;
-		out.println(clientMessage);
-		out.flush();
+		if (!m.equals("{EXIT}")) {
+			out.println(clientMessage);
+			out.flush();
+		}
+
+		else {
+			System.out.println("{EXIT}");
+			out.flush();
+		}
 	}
 
 	public int getPort() {
