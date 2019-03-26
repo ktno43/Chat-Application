@@ -1,22 +1,18 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.Vector;
 
 public class ServerThread extends Thread {
 	private int listeningPort;
-	static Vector<ClientThreadOut> clientVectorOut;
-	static Vector<ClientThreadIn> clientVectorIn;
-	boolean exited;
+	protected Vector<ClientThreadOut> clientVectorOut;
+	protected Vector<ClientThreadIn> clientVectorIn;
 
 	public ServerThread(int listenPort) {
 		this.listeningPort = listenPort;
-		ServerThread.clientVectorOut = new Vector<>();
-		ServerThread.clientVectorIn = new Vector<>();
-		this.exited = false;
+		this.clientVectorOut = new Vector<>();
+		this.clientVectorIn = new Vector<>();
 	}
 
 	@Override
@@ -24,10 +20,11 @@ public class ServerThread extends Thread {
 		try (ServerSocket ss = new ServerSocket(this.listeningPort)) {
 			// start the server...
 
-			boolean flag1 = true;
+			boolean listenFlag = true;
 			System.out.println("Listening for connections on port: " + this.listeningPort + "\n");
 			// and listen for connections
-			while (flag1) {
+
+			while (listenFlag) {
 				final Socket sock = ss.accept();
 				// got one!
 
@@ -35,42 +32,38 @@ public class ServerThread extends Thread {
 				System.out.println("Port: " + sock.getPort() + "\n");
 
 				ClientThreadIn connectedClient = new ClientThreadIn(sock, this);
-
 				clientVectorIn.add(connectedClient);
+
 				BufferedReader input = connectedClient.getReader();
 
-				boolean flag = true;
+				String remoteMessage = input.readLine();// read remote message
 
-				while (flag) {
-					String remoteMessage = input.readLine();// read remote message
+				connectedClient.serverPort = Integer.parseInt(remoteMessage);
+				boolean breakout = false;
 
-					flag = false;
-					connectedClient.serverPort = Integer.parseInt(remoteMessage);
-					boolean breakout = false;
-					for (ClientThreadOut cto : clientVectorOut) {
-						if (cto.getIp().equals(connectedClient.getIp())
-								&& cto.getPort() == connectedClient.serverPort) {
-							flag = false;
-							connectedClient.start();
-							breakout = true;
-							break;
-						}
-					}
-
-					if (breakout)
-						break;
-
-					Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
-					ClientThreadOut cto = new ClientThreadOut(s);
-					clientVectorOut.add(cto);
-					cto.send(Integer.toString(listeningPort));
-					cto.start();
-					if (!connectedClient.isAlive())
+				for (ClientThreadOut cto : clientVectorOut) {
+					if (cto.getIp().equals(connectedClient.getIp()) && cto.getPort() == connectedClient.serverPort) {
 						connectedClient.start();
+						breakout = true;
 
-					isConnected();
-					break;
+						break;
+					}
 				}
+
+				if (breakout)
+					break;
+
+				Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
+
+				ClientThreadOut cto = new ClientThreadOut(s);
+				clientVectorOut.add(cto);
+				cto.send(Integer.toString(listeningPort));
+				cto.start();
+
+				if (!connectedClient.isAlive())
+					connectedClient.start();
+
+				isConnected();
 			}
 
 		} catch (IOException ioe) {
@@ -83,7 +76,7 @@ public class ServerThread extends Thread {
 		ClientThreadOut client = new ClientThreadOut(ip, port);
 		client.send(Integer.toString(listeningPort));
 		client.start();
-		ServerThread.clientVectorOut.add(client);
+		this.clientVectorOut.add(client);
 
 	}
 
@@ -92,7 +85,7 @@ public class ServerThread extends Thread {
 	}
 
 	protected boolean isConnected(String ip, int port) {
-		for (ClientThreadOut ct : ServerThread.clientVectorOut) {
+		for (ClientThreadOut ct : this.clientVectorOut) {
 			if (ct.getIp().equals(ip) && ct.getListenPort() == port) {
 				return true;
 			}
@@ -101,30 +94,30 @@ public class ServerThread extends Thread {
 		return false;
 	}
 
-	public void printClientList() {
+	protected void printClientList() {
 		System.out.printf("%nID:\tIP Address\t\tPort No.%n");
-		for (int i = 0; i < ServerThread.clientVectorOut.size(); i++) {
+		for (int i = 0; i < this.clientVectorOut.size(); i++) {
 
-			System.out.printf("%d:\t%s\t\t%d%n", i + 1, ServerThread.clientVectorOut.get(i).getIp(),
-					ServerThread.clientVectorOut.get(i).getPort());
+			System.out.printf("%d:\t%s\t\t%d%n", i + 1, this.clientVectorOut.get(i).getIp(),
+					this.clientVectorOut.get(i).getPort());
 		}
 		System.out.println();
 	}
 
-	public void sendUserMessage(int id, String m) {
+	protected void sendUserMessage(int id, String m) {
 		ClientThreadOut cto = clientVectorOut.get(id - 1);
 
 		cto.send(m);
 	}
 
-	public void sendAllExitMsg() {
+	protected void sendAllExitMsg() {
 		for (int i = 0; i < clientVectorOut.size(); i++) {
 			ClientThreadOut cto = clientVectorOut.get(i);
 			cto.send("{EXIT}");
 		}
 	}
 
-	public void terminate(int id) throws IOException {
+	protected void terminate(int id) throws IOException {
 
 		// swapPos(id);
 		ClientThreadOut deletedClient = clientVectorOut.remove(id - 1);
@@ -146,42 +139,41 @@ public class ServerThread extends Thread {
 
 	}
 
-	public synchronized boolean isConnected() throws IOException {
-		if (!clientVectorIn.isEmpty() && !clientVectorOut.isEmpty()) {
-			for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
+	protected synchronized boolean isConnected() throws IOException {
+		for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
 
-				if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
+			if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
 
-					if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).exited) {
-						System.out.println("\nYOU HAVE BEEN TERMINATED :D?\n");
-					}
-
-					if (!clientVectorIn.isEmpty()) {
-						ServerThread.clientVectorIn.remove(i);
-					}
-
-					if (!clientVectorOut.isEmpty())
-						ServerThread.clientVectorOut.remove(i);
-
-					return false;
+				if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).exited) {
+					System.out.println("\nSomeone has terminated you from the chat. . .\n");
 				}
+
+				if (!clientVectorIn.isEmpty()) {
+					this.clientVectorIn.remove(i);
+				}
+
+				if (!clientVectorOut.isEmpty())
+					this.clientVectorOut.remove(i);
+
+				return false;
 			}
 		}
+
 		return true;
 	}
 
 	private void swapPos(int start) {
-		for (int i = start; i < ServerThread.clientVectorIn.size(); i++) {
-			ClientThreadIn temp = ServerThread.clientVectorIn.get(i);
-			ServerThread.clientVectorIn.set(i - 1, temp);
+		for (int i = start; i < this.clientVectorIn.size(); i++) {
+			ClientThreadIn temp = this.clientVectorIn.get(i);
+			this.clientVectorIn.set(i - 1, temp);
 		}
-		ServerThread.clientVectorIn.remove(ServerThread.clientVectorIn.size() - 1);
+		this.clientVectorIn.remove(this.clientVectorIn.size() - 1);
 
-		for (int i = start; i < ServerThread.clientVectorOut.size(); i++) {
-			ClientThreadOut temp = ServerThread.clientVectorOut.get(i);
-			ServerThread.clientVectorOut.set(i - 1, temp);
+		for (int i = start; i < this.clientVectorOut.size(); i++) {
+			ClientThreadOut temp = this.clientVectorOut.get(i);
+			this.clientVectorOut.set(i - 1, temp);
 		}
-		ServerThread.clientVectorOut.remove(ServerThread.clientVectorOut.size() - 1);
+		this.clientVectorOut.remove(this.clientVectorOut.size() - 1);
 
 	}
 }
