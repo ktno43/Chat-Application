@@ -51,9 +51,7 @@ public class ServerThread extends Thread {
 				}
 
 				if (!breakout) {
-
 					Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
-
 					ClientThreadOut cto = new ClientThreadOut(s);
 					clientVectorOut.add(cto);
 					cto.send(Integer.toString(listeningPort));
@@ -61,10 +59,9 @@ public class ServerThread extends Thread {
 
 					if (!connectedClient.isAlive())
 						connectedClient.start();
-
-					isConnected();
 				}
-				
+
+				isConnected();
 				break;
 			}
 
