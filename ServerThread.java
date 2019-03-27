@@ -23,7 +23,6 @@ public class ServerThread extends Thread {
 			boolean listenFlag = true;
 			System.out.println("Listening for connections on port: " + this.listeningPort + "\n");
 			// and listen for connections
-
 			while (listenFlag) {
 				final Socket sock = ss.accept();
 				// got one!
@@ -32,26 +31,33 @@ public class ServerThread extends Thread {
 				System.out.println("Port: " + sock.getPort() + "\n");
 
 				ClientThreadIn connectedClient = new ClientThreadIn(sock, this);
-				clientVectorIn.add(connectedClient);
 
+				clientVectorIn.add(connectedClient);
 				BufferedReader input = connectedClient.getReader();
 
-				String remoteMessage = input.readLine();// read remote message
+				boolean flag = true;
 
-				connectedClient.serverPort = Integer.parseInt(remoteMessage);
-				boolean breakout = false;
+				while (flag) {
+					String remoteMessage = input.readLine();// read remote message
 
-				for (ClientThreadOut cto : clientVectorOut) {
-					if (cto.getIp().equals(connectedClient.getIp()) && cto.getPort() == connectedClient.serverPort) {
-						connectedClient.start();
-						breakout = true;
-
-						break;
+					flag = false;
+					connectedClient.serverPort = Integer.parseInt(remoteMessage);
+					boolean breakout = false;
+					for (ClientThreadOut cto : clientVectorOut) {
+						if (cto.getIp().equals(connectedClient.getIp())
+								&& cto.getPort() == connectedClient.serverPort) {
+							flag = false;
+							connectedClient.start();
+							breakout = true;
+							break;
+						}
 					}
-				}
 
-				if (!breakout) {
+					if (breakout)
+						break;
+
 					Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
+
 					ClientThreadOut cto = new ClientThreadOut(s);
 					clientVectorOut.add(cto);
 					cto.send(Integer.toString(listeningPort));
@@ -59,13 +65,14 @@ public class ServerThread extends Thread {
 
 					if (!connectedClient.isAlive())
 						connectedClient.start();
+
+					break;
 				}
-
 				isConnected();
-				break;
 			}
+		} catch (
 
-		} catch (IOException ioe) {
+		IOException ioe) {
 			System.out.println(ioe.getMessage());
 			ioe.printStackTrace(System.err);
 		}
@@ -152,8 +159,7 @@ public class ServerThread extends Thread {
 	protected synchronized boolean isConnected() throws IOException {
 		for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
 
-			if (!clientVectorIn.get(i).clientSocket.isClosed()
-					&& clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
+			if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
 
 				if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).exited) {
 					System.out.println("\nSomeone has terminated you from the chat. . .\n");
