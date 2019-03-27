@@ -49,7 +49,7 @@ public class ClientThreadIn extends Thread {
 				}
 
 				if (remoteMessage != null && remoteMessage.equals("{EXIT}")) {
-					System.out.println("\nSomeone has left the chat. . .\n");		
+					System.out.println("\nSomeone has left the chat. . .\n");
 					exited = true;
 					this.st.isConnected();
 				}
@@ -70,6 +70,7 @@ public class ClientThreadIn extends Thread {
 
 		try {
 			this.clientSocket.close();
+			this.input.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();

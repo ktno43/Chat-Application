@@ -110,7 +110,7 @@ public class ServerThread extends Thread {
 	}
 
 	protected void sendUserMessage(int id, String m) {
-		if (id < clientVectorOut.size() || id == 0 || id > clientVectorOut.size())
+		if (id <= 0 || id > clientVectorOut.size())
 			System.out.println("\nID is incorrect");
 
 		else {
@@ -131,7 +131,7 @@ public class ServerThread extends Thread {
 
 		// swapPos(id);
 
-		if (id < clientVectorOut.size() || id == 0 || id > clientVectorOut.size())
+		if (id <= 0 || id > clientVectorOut.size())
 			System.out.println("\nID is incorrect");
 
 		else {
