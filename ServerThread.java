@@ -177,10 +177,19 @@ public class ServerThread extends Thread {
 				}
 			} catch (IOException e) {
 				System.out.print("");
+
+				if (!clientVectorIn.isEmpty()) {
+					this.clientVectorIn.remove(i);
+				}
+
+				if (!clientVectorOut.isEmpty())
+					this.clientVectorOut.remove(i);
+
 			}
 		}
 
 		return true;
+
 	}
 
 	private void swapPos(int start) {

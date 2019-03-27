@@ -49,8 +49,9 @@ public class ClientThreadIn extends Thread {
 				}
 
 				if (remoteMessage != null && remoteMessage.equals("{EXIT}")) {
-					System.out.println("\nSomeone has left the chat. . .\n");
+					System.out.println("\nSomeone has left the chat. . .\n");		
 					exited = true;
+					this.st.isConnected();
 				}
 
 				else if (remoteMessage != null && !remoteMessage.isEmpty() && isMessage(remoteMessage)) {
