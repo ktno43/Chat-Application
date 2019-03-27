@@ -152,7 +152,8 @@ public class ServerThread extends Thread {
 	protected synchronized boolean isConnected() throws IOException {
 		for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
 
-			if (clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
+			if (!clientVectorIn.get(i).clientSocket.isClosed()
+					&& clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
 
 				if (!clientVectorIn.get(i).clientSocket.isClosed() && !clientVectorIn.get(i).exited) {
 					System.out.println("\nSomeone has terminated you from the chat. . .\n");
