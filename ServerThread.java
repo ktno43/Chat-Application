@@ -24,7 +24,7 @@ public class ServerThread extends Thread {
 			System.out.println("Listening for connections on port: " + this.listeningPort + "\n");
 			// and listen for connections
 			while (listenFlag) {
-				final Socket sock = ss.accept();
+				Socket sock = ss.accept();
 				// got one!
 
 				System.out.println("\nNew Connection: " + sock.getInetAddress().toString());
@@ -34,12 +34,11 @@ public class ServerThread extends Thread {
 
 				clientVectorIn.add(connectedClient);
 				BufferedReader input = connectedClient.getReader();
+				String remoteMessage = input.readLine();// read remote message
 
 				boolean flag = true;
 
 				while (flag) {
-					String remoteMessage = input.readLine();// read remote message
-
 					flag = false;
 					connectedClient.serverPort = Integer.parseInt(remoteMessage);
 					boolean breakout = false;
@@ -56,8 +55,8 @@ public class ServerThread extends Thread {
 					if (breakout)
 						break;
 
+					flag = false;
 					Socket s = new Socket(sock.getInetAddress().getHostAddress(), Integer.parseInt(remoteMessage));
-
 					ClientThreadOut cto = new ClientThreadOut(s);
 					clientVectorOut.add(cto);
 					cto.send(Integer.toString(listeningPort));
@@ -67,7 +66,6 @@ public class ServerThread extends Thread {
 						connectedClient.start();
 				}
 				isConnected();
-				break;
 			}
 		} catch (
 
@@ -82,7 +80,6 @@ public class ServerThread extends Thread {
 		client.send(Integer.toString(listeningPort));
 		client.start();
 		this.clientVectorOut.add(client);
-
 	}
 
 	protected int getListeningPort() {
@@ -152,7 +149,6 @@ public class ServerThread extends Thread {
 				}
 			}
 		}
-
 	}
 
 	protected synchronized boolean isConnected() {
