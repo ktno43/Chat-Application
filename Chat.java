@@ -83,7 +83,7 @@ public class Chat {
 		System.exit(0);
 	}
 
-	private static synchronized boolean isNumeric(String str) {
+	private static boolean isNumeric(String str) {
 		try {
 			Integer.parseInt(str);
 			return true;
@@ -92,7 +92,7 @@ public class Chat {
 		}
 	}
 
-	private static synchronized void help() {
+	private static void help() {
 		System.out.println("\nmyip :- \n\tDisplay the IP address of the current process\n");
 		System.out.println("myport :- \n\tDisplay the IP address of the current process\n");
 		System.out.println("connect <IP> <Listening Port>:-"
@@ -104,7 +104,7 @@ public class Chat {
 		System.out.println("exit :- \n\tClose all connections and terminate the current process\n");
 	}
 
-	private static synchronized void myIp() {
+	private static void myIp() {
 		String systemipaddress = "";
 		try {
 			URL url_name = new URL("http://bot.whatismyipaddress.com");
@@ -126,12 +126,12 @@ public class Chat {
 		}
 	}
 
-	private static synchronized void send(int id, String m) {
+	private static void send(int id, String m) {
 		StringBuilder sb = new StringBuilder(m);
 		st.sendUserMessage(id, sb.insert(0, "{").toString());
 	}
 
-	private static synchronized void getList() {
+	private static void getList() {
 		st.printClientList();
 	}
 

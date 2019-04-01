@@ -77,19 +77,19 @@ public class ClientThreadIn extends Thread {
 		}
 	}
 
-	protected synchronized boolean isMessage(String m) {
+	protected boolean isMessage(String m) {
 		return m.charAt(0) == '{';
 	}
 
-	protected synchronized BufferedReader getReader() {
+	protected BufferedReader getReader() {
 		return input;
 	}
 
-	protected synchronized int getPort() {
+	protected int getPort() {
 		return this.clientSocket.getPort();
 	}
 
-	protected synchronized String getIp() {
+	protected String getIp() {
 		return this.clientSocket.getInetAddress().getHostAddress();
 	}
 }

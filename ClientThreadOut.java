@@ -41,21 +41,21 @@ public class ClientThreadOut extends Thread {
 		System.out.println("\nClient established\n");
 	}
 
-	public synchronized void send(String m) {
+	public void send(String m) {
 		clientMessage = m;
 		out.println(clientMessage);
 		out.flush();
 	}
 
-	public synchronized int getPort() {
+	public int getPort() {
 		return this.clientSocket.getPort();
 	}
 
-	public synchronized int getListenPort() {
+	public int getListenPort() {
 		return this.listeningPort;
 	}
 
-	public synchronized String getIp() {
+	public String getIp() {
 		return this.clientSocket.getInetAddress().getHostAddress();
 	}
 }

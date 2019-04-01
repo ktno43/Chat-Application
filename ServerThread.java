@@ -82,11 +82,11 @@ public class ServerThread extends Thread {
 		this.clientVectorOut.add(client);
 	}
 
-	protected synchronized int getListeningPort() {
+	protected int getListeningPort() {
 		return this.listeningPort;
 	}
 
-	protected synchronized boolean isConnected(String ip, int port) {
+	protected boolean isConnected(String ip, int port) {
 		for (ClientThreadOut ct : this.clientVectorOut) {
 			if (ct.getIp().equals(ip) && ct.getListenPort() == port) {
 				return true;
@@ -96,7 +96,7 @@ public class ServerThread extends Thread {
 		return false;
 	}
 
-	protected synchronized void printClientList() {
+	protected void printClientList() {
 		System.out.printf("%nID:\tIP Address\t\tPort No.%n");
 		for (int i = 0; i < this.clientVectorOut.size(); i++) {
 
@@ -106,7 +106,7 @@ public class ServerThread extends Thread {
 		System.out.println();
 	}
 
-	protected synchronized void sendUserMessage(int id, String m) {
+	protected void sendUserMessage(int id, String m) {
 		if (id <= 0 || id > clientVectorOut.size())
 			System.out.println("\nID is incorrect");
 
@@ -117,7 +117,7 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	protected synchronized void sendAllExitMsg() {
+	protected void sendAllExitMsg() {
 		for (int i = 0; i < clientVectorOut.size(); i++) {
 			ClientThreadOut cto = clientVectorOut.get(i);
 			cto.send("{EXIT}");
