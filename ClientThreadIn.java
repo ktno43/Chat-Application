@@ -20,7 +20,7 @@ public class ClientThreadIn extends Thread {
 	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
 		while (this.clientSocket == null) {
 			System.out.println("Socket Failed.. retry in 10 sec");
 			try {// ..retry in 10 secs
@@ -77,19 +77,19 @@ public class ClientThreadIn extends Thread {
 		}
 	}
 
-	protected boolean isMessage(String m) {
+	protected synchronized boolean isMessage(String m) {
 		return m.charAt(0) == '{';
 	}
 
-	protected BufferedReader getReader() {
+	protected synchronized BufferedReader getReader() {
 		return input;
 	}
 
-	protected int getPort() {
+	protected synchronized int getPort() {
 		return this.clientSocket.getPort();
 	}
 
-	protected String getIp() {
+	protected synchronized String getIp() {
 		return this.clientSocket.getInetAddress().getHostAddress();
 	}
 }

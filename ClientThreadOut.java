@@ -27,7 +27,7 @@ public class ClientThreadOut extends Thread {
 	}
 
 	@Override
-	public void run() {
+	public synchronized void run() {
 		while (this.clientSocket == null) {
 			System.out.println("Socket Failed.. retry in 10 sec");
 			try {// ..retry in 10 secs
@@ -41,21 +41,21 @@ public class ClientThreadOut extends Thread {
 		System.out.println("\nClient established\n");
 	}
 
-	public void send(String m) {
+	public synchronized void send(String m) {
 		clientMessage = m;
 		out.println(clientMessage);
 		out.flush();
 	}
 
-	public int getPort() {
+	public synchronized int getPort() {
 		return this.clientSocket.getPort();
 	}
 
-	public int getListenPort() {
+	public synchronized int getListenPort() {
 		return this.listeningPort;
 	}
 
-	public String getIp() {
+	public synchronized String getIp() {
 		return this.clientSocket.getInetAddress().getHostAddress();
 	}
 }

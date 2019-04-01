@@ -75,18 +75,18 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	protected void addConn(String ip, int port) throws IOException {
+	protected synchronized void addConn(String ip, int port) throws IOException {
 		ClientThreadOut client = new ClientThreadOut(ip, port);
 		client.send(Integer.toString(listeningPort));
 		client.start();
 		this.clientVectorOut.add(client);
 	}
 
-	protected int getListeningPort() {
+	protected synchronized int getListeningPort() {
 		return this.listeningPort;
 	}
 
-	protected boolean isConnected(String ip, int port) {
+	protected synchronized boolean isConnected(String ip, int port) {
 		for (ClientThreadOut ct : this.clientVectorOut) {
 			if (ct.getIp().equals(ip) && ct.getListenPort() == port) {
 				return true;
@@ -96,7 +96,7 @@ public class ServerThread extends Thread {
 		return false;
 	}
 
-	protected void printClientList() {
+	protected synchronized void printClientList() {
 		System.out.printf("%nID:\tIP Address\t\tPort No.%n");
 		for (int i = 0; i < this.clientVectorOut.size(); i++) {
 
@@ -106,7 +106,7 @@ public class ServerThread extends Thread {
 		System.out.println();
 	}
 
-	protected void sendUserMessage(int id, String m) {
+	protected synchronized void sendUserMessage(int id, String m) {
 		if (id <= 0 || id > clientVectorOut.size())
 			System.out.println("\nID is incorrect");
 
@@ -117,16 +117,14 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	protected void sendAllExitMsg() {
+	protected synchronized void sendAllExitMsg() {
 		for (int i = 0; i < clientVectorOut.size(); i++) {
 			ClientThreadOut cto = clientVectorOut.get(i);
 			cto.send("{EXIT}");
 		}
 	}
 
-	protected void terminate(int id) throws IOException {
-
-		// swapPos(id);
+	protected synchronized void terminate(int id) throws IOException {
 
 		if (id <= 0 || id > clientVectorOut.size())
 			System.out.println("\nID is incorrect");
@@ -153,7 +151,6 @@ public class ServerThread extends Thread {
 
 	protected synchronized boolean isConnected() {
 		for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
-
 			try {
 				if (!clientVectorIn.get(i).clientSocket.isClosed()
 						&& clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
@@ -185,21 +182,6 @@ public class ServerThread extends Thread {
 		}
 
 		return true;
-
-	}
-
-	private void swapPos(int start) {
-		for (int i = start; i < this.clientVectorIn.size(); i++) {
-			ClientThreadIn temp = this.clientVectorIn.get(i);
-			this.clientVectorIn.set(i - 1, temp);
-		}
-		this.clientVectorIn.remove(this.clientVectorIn.size() - 1);
-
-		for (int i = start; i < this.clientVectorOut.size(); i++) {
-			ClientThreadOut temp = this.clientVectorOut.get(i);
-			this.clientVectorOut.set(i - 1, temp);
-		}
-		this.clientVectorOut.remove(this.clientVectorOut.size() - 1);
 
 	}
 }
