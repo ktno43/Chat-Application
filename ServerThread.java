@@ -130,22 +130,10 @@ public class ServerThread extends Thread {
 			System.out.println("\nID is incorrect");
 
 		else {
-			ClientThreadOut deletedClient = clientVectorOut.remove(id - 1);
-
-			if (!deletedClient.clientSocket.isClosed()) {
-				deletedClient.clientSocket.close();
-			}
-			int deletedServerPort = deletedClient.getListenPort();
-
-			for (int i = 0; i < clientVectorIn.size(); i++) {
-				if (clientVectorIn.get(i).serverPort == deletedServerPort) {
-					if (!clientVectorIn.get(i).clientSocket.isClosed()) {
-						clientVectorIn.get(i).clientSocket.close();
-					}
-					clientVectorIn.remove(i);
-					break;
-				}
-			}
+			ClientThreadOut cto = clientVectorOut.get(id - 1);
+			cto.send("{TERMINATE}");
+			cto.clientSocket.close();
+			cto.out.close();
 		}
 	}
 
@@ -154,10 +142,6 @@ public class ServerThread extends Thread {
 			try {
 				if (!clientVectorIn.get(i).clientSocket.isClosed()
 						&& clientVectorIn.get(i).clientSocket.getInputStream().read() == -1) {
-
-					if (!clientVectorIn.get(i).exited) {
-						System.out.println("\nSomeone has terminated you from the chat. . .\n");
-					}
 
 					if (!clientVectorIn.isEmpty()) {
 						this.clientVectorIn.remove(i);
