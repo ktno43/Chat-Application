@@ -75,7 +75,7 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	protected synchronized void addConn(String ip, int port) throws IOException {
+	protected void addConn(String ip, int port) throws IOException {
 		ClientThreadOut client = new ClientThreadOut(ip, port);
 		client.send(Integer.toString(listeningPort));
 		client.start();
@@ -124,7 +124,7 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	protected synchronized void terminate(int id) throws IOException {
+	protected void terminate(int id) throws IOException {
 
 		if (id <= 0 || id > clientVectorOut.size())
 			System.out.println("\nID is incorrect");
@@ -149,7 +149,7 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	protected synchronized boolean isConnected() {
+	protected boolean isConnected() {
 		for (int i = 0; i < clientVectorIn.size(); i++) { // check for closed inPorts
 			try {
 				if (!clientVectorIn.get(i).clientSocket.isClosed()
@@ -169,8 +169,6 @@ public class ServerThread extends Thread {
 					return false;
 				}
 			} catch (IOException e) {
-				System.out.print("");
-
 				if (!clientVectorIn.isEmpty()) {
 					this.clientVectorIn.remove(i);
 				}
@@ -182,6 +180,5 @@ public class ServerThread extends Thread {
 		}
 
 		return true;
-
 	}
 }

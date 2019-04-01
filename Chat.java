@@ -120,7 +120,7 @@ public class Chat {
 		System.out.println("\nPublic IP Address: " + systemipaddress + "\n");
 	}
 
-	private static synchronized void connect(String clientIP, int clientListenPort) throws IOException {
+	private static void connect(String clientIP, int clientListenPort) throws IOException {
 		if (!st.isConnected(clientIP, clientListenPort)) {
 			st.addConn(clientIP, clientListenPort);
 		}
